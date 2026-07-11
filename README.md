@@ -1,5 +1,7 @@
 # ♟️ Community README Chess Tournament
 
+[![Chess](https://github.com/vaishaldsouza/chess/actions/workflows/Chess.yml/badge.svg)](https://github.com/vaishaldsouza/chess/actions/workflows/Chess.yml)
+
 Welcome! This is an interactive chess game played collectively by the GitHub community directly inside this README file.
 
 ### 🎮 It's your turn!
