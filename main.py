@@ -22,6 +22,7 @@ class Action(Enum):
     MOVE = 1
     NEW_GAME = 2
     RESIGN = 3
+    CHANGE_THEME = 4
 
 
 def update_top_moves(user):
@@ -79,6 +80,11 @@ def parse_issue(title):
 
     if title.strip().lower() in ('chess: resign game', 'chess: resign'):
         return (Action.RESIGN, None)
+
+    if 'chess: change theme to' in title.lower():
+        match_obj = re.match('Chess: Change theme to ([a-zA-Z0-9_-]+)', title, re.I)
+        if match_obj:
+            return (Action.CHANGE_THEME, match_obj.group(1).lower())
 
     if 'chess: move' in title.lower():
         match_obj = re.match('Chess: Move ([A-H][1-8]) to ([A-H][1-8])', title, re.I)
@@ -214,6 +220,66 @@ def main(issue, issue_author, repo_owner):
         issue_labels = ['White' if gameboard.turn == chess.WHITE else 'Black']
         issue.create_comment(settings['comments']['successful_move'].format(author=issue_author, move='resign'))
         issue.edit(state='closed', labels=issue_labels)
+
+    elif action[0] == Action.CHANGE_THEME:
+        theme = action[1]
+        allowed_themes = ['default', 'neon', 'wood', 'cyberpunk']
+        if theme not in allowed_themes:
+            reason = f"Theme `{theme}` is not supported. Supported themes are: {', '.join(allowed_themes)}."
+            issue.create_comment(settings['comments']['invalid_theme'].format(author=issue_author, reason=reason))
+            issue.edit(state='closed', labels=['Invalid'])
+            return False, 'ERROR: Invalid theme'
+
+        player_list = set()
+        if os.path.exists('data/last_moves.txt'):
+            with open('data/last_moves.txt') as moves_file:
+                lines = moves_file.readlines()
+                for line in lines:
+                    if ':' in line:
+                        player_list.add(line.split(':')[1].strip())
+
+        is_owner = (issue_author == repo_owner)
+        is_participant = (issue_author in player_list)
+
+        if not is_owner and not is_participant and os.path.exists('games/current.pgn'):
+            reason = "Only players who have participated in the current game or the repository owner can change the theme."
+            issue.create_comment(settings['comments']['invalid_theme'].format(author=issue_author, reason=reason))
+            issue.edit(state='closed', labels=['Invalid'])
+            return False, 'ERROR: Invalid theme request'
+
+        # Update theme.txt
+        with open('data/theme.txt', 'w') as theme_file:
+            theme_file.write(theme)
+
+        issue.create_comment(settings['comments']['successful_theme'].format(author=issue_author, theme=theme))
+        issue.edit(state='closed', labels=['Theme Changed'])
+
+        if not os.path.exists('games/current.pgn'):
+            # Regenerate README and return
+            last_moves = markdown.generate_last_moves()
+            with open('README.md', 'r', encoding='utf-8') as file:
+                readme = file.read()
+                readme = replace_text_between(readme, settings['markers']['board'], '{chess_board}')
+                readme = replace_text_between(readme, settings['markers']['moves'], '{moves_list}')
+                readme = replace_text_between(readme, settings['markers']['turn'],  '{turn}')
+                readme = replace_text_between(readme, settings['markers']['last_moves'], '{last_moves}')
+                readme = replace_text_between(readme, settings['markers']['top_moves'], '{top_moves}')
+
+            with open('README.md', 'w', encoding='utf-8') as file:
+                file.write(readme.format(
+                    chess_board=markdown.board_to_markdown(gameboard),
+                    moves_list=markdown.generate_moves_list(gameboard),
+                    turn='white',
+                    last_moves=last_moves,
+                    top_moves=markdown.generate_top_moves()))
+            return True, ''
+
+        # If game is in progress, load it to fall through
+        with open('games/current.pgn') as pgn_file:
+            game = chess.pgn.read_game(pgn_file)
+            gameboard = game.board()
+        for move in game.mainline_moves():
+            gameboard.push(move)
 
     elif action[0] == Action.UNKNOWN:
         issue.create_comment(settings['comments']['unknown_command'].format(author=issue_author))

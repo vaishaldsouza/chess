@@ -42,17 +42,17 @@ When you select a move coordinate:
 <details>
   <summary>📜 Last 5 moves in this game</summary>
   <!-- BEGIN LAST MOVES -->
-  <!-- END LAST MOVES -->
+<!-- END LAST MOVES -->
 </details>
 
 <details>
   <summary>🏆 Leaderboard: Top 10 contributors</summary>
   <!-- BEGIN TOP MOVES -->
-  
+
 | Total moves |  User  |
 | :---------: | :----- |
 
-  <!-- END TOP MOVES -->
+<!-- END TOP MOVES -->
 </details>
 
 ---

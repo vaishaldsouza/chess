@@ -14,6 +14,8 @@ def get_test_data(settings, move_data, owner, is_white_turn):
             comments += [settings['comments']['invalid_resign'].format(author='@.+', reason='.+')]
         elif 'Start new game' in move_data['move']:
             comments += [settings['comments']['invalid_new_game'].format(author='@.+')]
+        elif 'Change theme' in move_data['move']:
+            comments += [settings['comments']['invalid_theme'].format(author='@.+', reason='.+')]
         else:
             comments += [settings['comments']['consecutive_moves'].format(author='@.+')]
     else:
@@ -25,6 +27,9 @@ def get_test_data(settings, move_data, owner, is_white_turn):
         elif 'Resign' in move_data['move']:
             labels += ['White' if is_white_turn else 'Black']
             comments += [settings['comments']['successful_move'].format(author='@.+', move='resign')]
+        elif 'Change theme' in move_data['move']:
+            labels += ['Theme Changed']
+            comments += [settings['comments']['successful_theme'].format(author='@.+', theme='.+')]
         else:
             labels += ['White' if is_white_turn else 'Black']
             comments += [settings['comments']['successful_move'].format(author='@.+', move='.....?')]
@@ -74,7 +79,7 @@ def run_test_case(filename, main_fn):
         if 'is_invalid' not in move_data or move_data['is_invalid'] == False:
             if 'Start new game' in move_data['move']:
                 is_white_turn = True
-            elif 'Resign' in move_data['move']:
+            elif 'Resign' in move_data['move'] or 'Change theme' in move_data['move']:
                 pass
             else:
                 is_white_turn = not is_white_turn

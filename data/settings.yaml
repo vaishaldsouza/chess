@@ -32,6 +32,12 @@ comments:
   # Message displayed when a resignation request is invalid. {reason} specifies why.
   invalid_resign: "Sorry {author}, you cannot resign. {reason}"
 
+  # Message displayed when a theme change is successful.
+  successful_theme: "{author} done! Theme successfully changed to `{theme}`."
+
+  # Message displayed when a theme change is invalid.
+  invalid_theme: "Sorry {author}, I can't change the theme. {reason}"
+
   # Message displayed when either a player or the repository owner start a new game
   successful_new_game: "{author} done! New game successfully started!"
   
@@ -49,6 +55,9 @@ issues:
   resign:
     body: "Please do not change the title. Just click \"Submit new issue\". You don't need to do anything else :D"
     title: "Chess: Resign game"
+  change_theme:
+    body: "Please do not change the title. Just click \"Submit new issue\". You don't need to do anything else :D"
+    title: "Chess: Change theme to {theme}"
 
 markers:
   board:

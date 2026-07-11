@@ -1,0 +1,25 @@
+name: Change Theme
+owner: '@player1'
+moves:
+  - author: '@player1'
+    move: 'Chess: Start new game'
+
+  - author: '@player1'
+    move: 'Chess: Move D2 to D4'
+
+  - author: '@player1'
+    move: 'Chess: Change theme to neon'
+
+  - author: '@player2'
+    move: 'Chess: Move D7 to D5'
+
+  - author: '@player2'
+    move: 'Chess: Change theme to wood'
+
+  - author: '@player3'
+    move: 'Chess: Change theme to neon'
+    is_invalid: true
+
+  - author: '@player1'
+    move: 'Chess: Change theme to invalid_theme_name'
+    is_invalid: true

@@ -100,26 +100,51 @@ def generate_moves_list(board):
         params=urlencode(settings['issues']['resign']))
     markdown += f"\n\nOr you can [🏳️ Resign game]({resign_link}) if you think there is no hope!"
 
+    allowed_themes = ['default', 'neon', 'wood', 'cyberpunk']
+    theme_links = []
+    for t in allowed_themes:
+        theme_issue_params = {
+            'body': settings['issues']['change_theme']['body'],
+            'title': settings['issues']['change_theme']['title'].format(theme=t)
+        }
+        link = settings['issues']['link'].format(
+            repo=os.environ["GITHUB_REPOSITORY"],
+            params=urlencode(theme_issue_params)
+        )
+        theme_links.append(f"[{t.capitalize()}]({link})")
+
+    markdown += f"\n\n🎨 **Change Theme**: {', '.join(theme_links)}"
+
     return markdown
+
+
+def get_current_theme():
+    if os.path.exists('data/theme.txt'):
+        with open('data/theme.txt', 'r') as file:
+            return file.read().strip().lower()
+    return 'default'
 
 def board_to_markdown(board):
     board_list = [[item for item in line.split(' ')] for line in str(board).split('\n')]
     markdown = ""
 
-    images = {
-        "r": "img/black/rook.svg",
-        "n": "img/black/knight.svg",
-        "b": "img/black/bishop.svg",
-        "q": "img/black/queen.svg",
-        "k": "img/black/king.svg",
-        "p": "img/black/pawn.svg",
+    theme = get_current_theme()
+    theme_prefix = f"img/themes/{theme}" if theme != 'default' else "img"
 
-        "R": "img/white/rook.svg",
-        "N": "img/white/knight.svg",
-        "B": "img/white/bishop.svg",
-        "Q": "img/white/queen.svg",
-        "K": "img/white/king.svg",
-        "P": "img/white/pawn.svg",
+    images = {
+        "r": f"{theme_prefix}/black/rook.svg",
+        "n": f"{theme_prefix}/black/knight.svg",
+        "b": f"{theme_prefix}/black/bishop.svg",
+        "q": f"{theme_prefix}/black/queen.svg",
+        "k": f"{theme_prefix}/black/king.svg",
+        "p": f"{theme_prefix}/black/pawn.svg",
+
+        "R": f"{theme_prefix}/white/rook.svg",
+        "N": f"{theme_prefix}/white/knight.svg",
+        "B": f"{theme_prefix}/white/bishop.svg",
+        "Q": f"{theme_prefix}/white/queen.svg",
+        "K": f"{theme_prefix}/white/king.svg",
+        "P": f"{theme_prefix}/white/pawn.svg",
 
         ".": "img/blank.png"
     }
