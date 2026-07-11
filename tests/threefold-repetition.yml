@@ -1,0 +1,27 @@
+name: Threefold Repetition Game Draw
+owner: '@player1'
+moves:
+  - author: '@player1'
+    move: 'Chess: Start new game'
+
+  - author: '@player1'
+    move: 'Chess: Move G1 to F3'
+
+  - author: '@player2'
+    move: 'Chess: Move G8 to F6'
+
+  - author: '@player1'
+    move: 'Chess: Move F3 to G1'
+
+  - author: '@player2'
+    move: 'Chess: Move F6 to G8'
+
+  - author: '@player1'
+    move: 'Chess: Move G1 to F3'
+
+  - author: '@player2'
+    move: 'Chess: Move G8 to F6'
+
+  - author: '@player1'
+    move: 'Chess: Move F3 to G1'
+    is_draw: true

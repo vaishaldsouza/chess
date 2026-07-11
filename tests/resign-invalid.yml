@@ -1,0 +1,19 @@
+name: Invalid Resignation
+owner: '@player1'
+moves:
+  - author: '@player1'
+    move: 'Chess: Start new game'
+
+  - author: '@player1'
+    move: 'Chess: Move D2 to D4'
+
+  - author: '@player3'
+    move: 'Chess: Resign game'
+    is_invalid: true
+
+  - author: '@player2'
+    move: 'Chess: Move D7 to D5'
+
+  - author: '@player2'
+    move: 'Chess: Resign game'
+    is_invalid: true
