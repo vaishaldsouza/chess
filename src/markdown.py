@@ -129,25 +129,7 @@ def board_to_markdown(board):
     markdown = ""
 
     theme = get_current_theme()
-    theme_prefix = f"img/themes/{theme}" if theme != 'default' else "img"
-
-    images = {
-        "r": f"{theme_prefix}/black/rook.svg",
-        "n": f"{theme_prefix}/black/knight.svg",
-        "b": f"{theme_prefix}/black/bishop.svg",
-        "q": f"{theme_prefix}/black/queen.svg",
-        "k": f"{theme_prefix}/black/king.svg",
-        "p": f"{theme_prefix}/black/pawn.svg",
-
-        "R": f"{theme_prefix}/white/rook.svg",
-        "N": f"{theme_prefix}/white/knight.svg",
-        "B": f"{theme_prefix}/white/bishop.svg",
-        "Q": f"{theme_prefix}/white/queen.svg",
-        "K": f"{theme_prefix}/white/king.svg",
-        "P": f"{theme_prefix}/white/pawn.svg",
-
-        ".": "img/blank.png"
-    }
+    theme_prefix = f"img/themes/{theme}"
 
     # Write header in Markdown format
     if board.turn == chess.BLACK:
@@ -165,11 +147,38 @@ def board_to_markdown(board):
     for row in rows:
         markdown += "| **" + str(9 - row) + "** | "
         columns = board_list[row - 1]
+        
+        # Determine files to iterate
+        files = list(range(8))
         if board.turn == chess.BLACK:
-            columns = reversed(columns)
+            files = list(reversed(files))
 
-        for elem in columns:
-            markdown += "<img src=\"{}\" width=50px> | ".format(images.get(elem, "???"))
+        for col_idx in files:
+            elem = columns[col_idx]
+            
+            # Find rank_idx (0 to 7)
+            # Row 1 corresponds to rank 7 (8th rank)
+            # Row 8 corresponds to rank 0 (1st rank)
+            rank_idx = 8 - row
+            
+            # Get square and color
+            square = chess.square(col_idx, rank_idx)
+            is_light = bool(chess.BB_LIGHT_SQUARES & (1 << square))
+            sq_type = 'light' if is_light else 'dark'
+            
+            # Map elements dynamically
+            if elem == '.':
+                img_path = f"{theme_prefix}/blank_{sq_type}.svg"
+            else:
+                piece_names = {
+                    "r": "rook", "n": "knight", "b": "bishop", "q": "queen", "k": "king", "p": "pawn",
+                    "R": "rook", "N": "knight", "B": "bishop", "Q": "queen", "K": "king", "P": "pawn"
+                }
+                piece_color = "black" if elem.islower() else "white"
+                piece_name = piece_names[elem]
+                img_path = f"{theme_prefix}/{piece_color}/{piece_name}_{sq_type}.svg"
+                
+            markdown += f'<img src="{img_path}" width=50px> | '
 
         markdown += "**" + str(9 - row) + "** |\n"
 
